@@ -85,7 +85,10 @@ class Uptime(object):
             output.update({
                 'status': self._get_current_status(seconds),
                 'details': self._get_detailed_output(seconds),
-                'data': {'name': self.PROGRAM_NAME, 'uptime': seconds},
+                'data': {
+                    'name': self.PROGRAM_NAME,
+                    'uptime': seconds,
+                },
             })
         except UptimeError, e:
             output.update({'details': str(e)})
