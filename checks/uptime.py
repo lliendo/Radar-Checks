@@ -47,7 +47,10 @@ class Uptime(object):
 
     def _build_argument_parser(self):
         parser = ArgumentParser(prog=self.PROGRAM_NAME)
-        parser.add_argument('-s', '--seconds', dest='seconds', action='store', required=True)
+        parser.add_argument(
+            '-s', '--seconds', dest='seconds', action='store', required=True,
+            help='Number of seconds for which uptime is severe. E.g. : 300. If uptime is below 300 seconds then severe status is returned.'
+        )
         parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
         return parser
