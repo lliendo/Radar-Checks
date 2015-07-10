@@ -3,20 +3,20 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of Radar.
+This file is part of Radar-Checks.
 
-Radar is free software: you can redistribute it and/or modify
+Radar-Checks is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Radar is distributed in the hope that it will be useful,
+Radar-Checks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Lesser GNU General Public License for more details.
 
 You should have received a copy of the Lesser GNU General Public License
-along with Radar. If not, see <http://www.gnu.org/licenses/>.
+along with Radar-Checks. If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2015 Lucas Liendo.
 """
@@ -48,8 +48,8 @@ class Uptime(object):
     def _build_argument_parser(self):
         parser = ArgumentParser(prog=self.PROGRAM_NAME)
         parser.add_argument(
-            '-s', '--seconds', dest='seconds', action='store', required=True,
-            help='Number of seconds for which uptime is severe. E.g. : 300. If uptime is below 300 seconds then severe status is returned.'
+            '-S', '--severe', dest='seconds', action='store', required=True,
+            help='Number of seconds for which uptime is severe. E.g. : 300. If uptime is below 300 seconds a severe status is returned.'
         )
         parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
