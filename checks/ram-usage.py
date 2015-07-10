@@ -3,20 +3,20 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of Radar.
+This file is part of Radar-Checks.
 
-Radar is free software: you can redistribute it and/or modify
+Radar-Checks is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Radar is distributed in the hope that it will be useful,
+Radar-Checks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Lesser GNU General Public License for more details.
 
 You should have received a copy of the Lesser GNU General Public License
-along with Radar. If not, see <http://www.gnu.org/licenses/>.
+along with Radar-Checks. If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2015 Lucas Liendo.
 """
@@ -61,11 +61,11 @@ class RamUsage(object):
         )
         parser.add_argument(
             '-O', '--ok', dest='ok_threshold', action='store', required=True,
-            help='Ok status range. E.g : (0,1500]. Don\'t include brackets.'
+            help='Ok status range. E.g : (0,1500]. Don\'t include brackets !'
         )
         parser.add_argument(
             '-W', '--warning', dest='warning_threshold', action='store', required=True,
-            help='Warning status range. E.g : (1500,1700]. Don\'t include brackets.'
+            help='Warning status range. E.g : (1500,1700]. Don\'t include brackets !'
         )
         parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
@@ -113,6 +113,7 @@ class RamUsage(object):
 
         return mem_stats
 
+    # TODO: Implement percentage units !
     def _get_thresholds(self):
         try:
             units = self.units[self._cli_options.units]
