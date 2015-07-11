@@ -34,7 +34,6 @@ class DiskUsageError(Exception):
 class DiskUsage(object):
 
     PROGRAM_NAME = 'disk-usage'
-    PROGRAM_VERSION = '0.0.1'
 
     def __init__(self):
         self.units = {
@@ -105,6 +104,7 @@ class DiskUsage(object):
 
     def _get_disk_usage(self):
         stats = disk_usage(self._cli_options.partition)
+
         return {
             'in use': stats.used,
             'free': stats.free,
@@ -112,21 +112,14 @@ class DiskUsage(object):
         }
 
     def get(self):
-        output = {'status': 'ERROR'}
+        stats = self._get_disk_usage()
+        output.update({
+            'status': self._get_current_status(stats),
+            'details': self._get_detailed_output(stats),
+            'data': stats,
+        })
 
-        try:
-            stats = self._get_disk_usage()
-            output.update({
-                'status': self._get_current_status(stats),
-                'details': self._get_detailed_output(stats),
-                'data': stats,
-            })
-
-            output['data'].update({'name': self.PROGRAM_NAME})
-        except DiskUsageError, e:
-            output.update({'details': str(e)})
-        except KeyError:
-            output.update({'details': '{:} platform is not supported.'.format(platform)})
+        output['data'].update({'name': self.PROGRAM_NAME})
 
         return serialize_json(output)
 
