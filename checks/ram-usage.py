@@ -22,10 +22,9 @@ Copyright 2015 Lucas Liendo.
 """
 
 
-from math import floor
-from platform import system as platform_name
 from json import dumps as serialize_json
 from argparse import ArgumentParser
+from psutil import phymem_usage as mem_usage
 
 
 class RamUsageError(Exception):
@@ -35,14 +34,8 @@ class RamUsageError(Exception):
 class RamUsage(object):
 
     PROGRAM_NAME = 'ram-usage'
-    PROGRAM_VERSION = '0.0.1'
 
     def __init__(self):
-        self.available_platforms = {
-            'Linux': self._linux_ram_usage,
-            'Windows': self._windows_ram_usage,
-        }
-
         self.units = {
             'bytes': 1,
             'kib': 1024,
@@ -70,48 +63,6 @@ class RamUsage(object):
         parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
         return parser
-
-    def _linux_ram_usage(self):
-        def _process_meminfo_line(line):
-            units = {'kB': 1024, 'none': 1}
-
-            try:
-                k, v, u = line.split()
-            except ValueError:
-                k, v, u = line.split() + ['none']
-
-            return k.rstrip(':'), int(v) * units[u]
-
-        try:
-            with open('/proc/meminfo') as fd:
-                stats = {k: v for k, v in [_process_meminfo_line(l) for l in fd.readlines()]}
-        except IOError, e:
-            raise RamUsageError('Error - Couldn\'t open /proc/meminfo. Details : {:}'.format(e))
-
-        stats.update({
-            'in use': stats['MemTotal'] - stats['MemFree'],
-            'free': stats['MemFree'],
-            'total': stats['MemTotal'],
-        })
-
-        return stats
-
-    def _windows_ram_usage(self):
-        try:
-            from win32api import GlobalMemoryStatusEx
-        except ImportError:
-            raise RamUsageError('Error - Couldn\'t import win32api.')
-
-        stats = GlobalMemoryStatusEx()
-        in_use = floor((stats['MemoryLoad'] / 100.0) * stats['TotalPhys'])
-
-        stats.update({
-            'in use': in_use,
-            'free': stats['TotalPhys'] - in_use,
-            'total': stats['TotalPhys'],
-        })
-
-        return stats
 
     # TODO: Implement percentage units !
     def _get_thresholds(self):
@@ -148,26 +99,24 @@ class RamUsage(object):
             *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
         )
 
-    def get(self):
-        output = {'status': 'ERROR'}
-        platform = platform_name()
+    def _get_mem_usage(self):
+        stats = mem_usage()
 
-        try:
-            stats = self.available_platforms[platform]()
-            output.update({
-                'status': self._get_current_status(stats),
-                'details': self._get_detailed_output(stats),
-                'data': {
-                    'name': self.PROGRAM_NAME,
-                    'in use': stats['in use'],
-                    'free': stats['free'],
-                    'total': stats['total'],
-                },
-            })
-        except RamUsageError, e:
-            output.update({'details': str(e)})
-        except KeyError:
-            output.update({'details': '{:} platform is not supported.'.format(platform)})
+        return {
+            'in use': stats.used,
+            'free': stats.free,
+            'total': stats.total,
+        }
+
+    def get(self):
+        stats = self._get_mem_usage()
+        output.update({
+            'status': self._get_current_status(stats),
+            'details': self._get_detailed_output(stats),
+            'data': stats,
+        })
+
+        output['data'].update({'name': self.PROGRAM_NAME})
 
         return serialize_json(output)
 
