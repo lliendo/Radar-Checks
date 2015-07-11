@@ -84,17 +84,17 @@ class RamUsage(object):
 
         try:
             with open('/proc/meminfo') as fd:
-                mem_stats = {k: v for k, v in [_process_meminfo_line(l) for l in fd.readlines()]}
+                stats = {k: v for k, v in [_process_meminfo_line(l) for l in fd.readlines()]}
         except IOError, e:
             raise RamUsageError('Error - Couldn\'t open /proc/meminfo. Details : {:}'.format(e))
 
-        mem_stats.update({
-            'in use': mem_stats['MemTotal'] - mem_stats['MemFree'],
-            'free': mem_stats['MemFree'],
-            'total': mem_stats['MemTotal'],
+        stats.update({
+            'in use': stats['MemTotal'] - stats['MemFree'],
+            'free': stats['MemFree'],
+            'total': stats['MemTotal'],
         })
 
-        return mem_stats
+        return stats
 
     def _windows_ram_usage(self):
         try:
@@ -102,16 +102,16 @@ class RamUsage(object):
         except ImportError:
             raise RamUsageError('Error - Couldn\'t import win32api.')
 
-        mem_stats = GlobalMemoryStatusEx()
-        in_use = floor((mem_stats['MemoryLoad'] / 100.0) * mem_stats['TotalPhys'])
+        stats = GlobalMemoryStatusEx()
+        in_use = floor((stats['MemoryLoad'] / 100.0) * stats['TotalPhys'])
 
-        mem_stats.update({
+        stats.update({
             'in use': in_use,
-            'free': mem_stats['TotalPhys'] - in_use,
-            'total': mem_stats['TotalPhys'],
+            'free': stats['TotalPhys'] - in_use,
+            'total': stats['TotalPhys'],
         })
 
-        return mem_stats
+        return stats
 
     # TODO: Implement percentage units !
     def _get_thresholds(self):
@@ -120,32 +120,32 @@ class RamUsage(object):
             min_ok, max_ok, min_warning, max_warning = [
                 float(t) * units for t in self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
             ]
-
-            return {
-                'min ok': min_ok,
-                'max ok': max_ok,
-                'min warning': min_warning,
-                'max warning': max_warning,
-            }
         except ValueError:
             raise RamUsageError('')
         except KeyError:
             raise RamUsageError('Error - Wrong \'{:}\' units parameter.')
 
-    def _get_current_status(self, mem_stats):
+        return {
+            'min ok': min_ok,
+            'max ok': max_ok,
+            'min warning': min_warning,
+            'max warning': max_warning,
+        }
+
+    def _get_current_status(self, stats):
         status = 'SEVERE'
         thresholds = self._get_thresholds()
 
-        if thresholds['min ok'] < mem_stats['in use'] <= thresholds['max ok']:
+        if thresholds['min ok'] < stats['in use'] <= thresholds['max ok']:
             status = 'OK'
-        elif thresholds['min warning'] < mem_stats['in use'] <= thresholds['max warning']:
+        elif thresholds['min warning'] < stats['in use'] <= thresholds['max warning']:
             status = 'WARNING'
 
         return status
 
-    def _get_detailed_output(self, mem_stats):
-        return 'total : {:.2f}, in use : {:.2f}, free : {:.2f}.'.format(
-            *[mem_stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
+    def _get_detailed_output(self, stats):
+        return 'Total : {:.2f}, in use : {:.2f}, free : {:.2f}.'.format(
+            *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
         )
 
     def get(self):
@@ -153,15 +153,15 @@ class RamUsage(object):
         platform = platform_name()
 
         try:
-            mem_stats = self.available_platforms[platform]()
+            stats = self.available_platforms[platform]()
             output.update({
-                'status': self._get_current_status(mem_stats),
-                'details': self._get_detailed_output(mem_stats),
+                'status': self._get_current_status(stats),
+                'details': self._get_detailed_output(stats),
                 'data': {
                     'name': self.PROGRAM_NAME,
-                    'in use': mem_stats['in use'],
-                    'free': mem_stats['free'],
-                    'total': mem_stats['total'],
+                    'in use': stats['in use'],
+                    'free': stats['free'],
+                    'total': stats['total'],
                 },
             })
         except RamUsageError, e:
