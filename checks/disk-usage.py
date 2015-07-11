@@ -22,10 +22,9 @@ Copyright 2015 Lucas Liendo.
 """
 
 
-from math import floor
-from platform import system as platform_name
 from json import dumps as serialize_json
 from argparse import ArgumentParser
+from psutil import disk_usage
 
 
 class DiskUsageError(Exception):
@@ -38,11 +37,6 @@ class DiskUsage(object):
     PROGRAM_VERSION = '0.0.1'
 
     def __init__(self):
-        self.available_platforms = {
-            'Linux': self._linux_disk_usage,
-            'Windows': self._windows_disk_usage,
-        }
-
         self.units = {
             'bytes': 1,
             'kib': 1024,
@@ -50,7 +44,6 @@ class DiskUsage(object):
             'gib': 1024 ** 3,
             'per': 1,
         }
-
         self._cli_options = self._build_argument_parser().parse_args()
 
     def _build_argument_parser(self):
@@ -74,36 +67,6 @@ class DiskUsage(object):
         parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
         return parser
-
-    def _linux_disk_usage(self):
-        try:
-            from os import statvfs
-        except ImportError:
-            raise DiskUsageError('Error - Couldn\'t import statvfs.')
-
-        stats = statvfs(self._cli_options.partition)
-        total = stats.f_blocks * stats.f_bsize
-        free = stats.f_bavail * stats.f_bsize
-
-        return {
-            'in use': total - free,
-            'free': free,
-            'total': total,
-        }
-
-    def _windows_disk_usage(self):
-        try:
-            from win32api import GetDiskFreeSpaceEx
-        except ImportError:
-            raise DiskUsageError('Error - Couldn\'t import win32api.')
-
-        _, total, free = GetDiskFreeSpaceEx()
-
-        return {
-            'in use': total - free,
-            'free': free,
-            'total': total,
-        }
 
     # TODO: Implement percentage units !
     def _get_thresholds(self):
@@ -140,22 +103,26 @@ class DiskUsage(object):
             *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
         )
 
+    def _get_disk_usage(self):
+        stats = disk_usage(self._cli_options.partition)
+        return {
+            'in use': stats.used,
+            'free': stats.free,
+            'total': stats.total,
+        }
+
     def get(self):
         output = {'status': 'ERROR'}
-        platform = platform_name()
 
         try:
-            stats = self.available_platforms[platform]()
+            stats = self._get_disk_usage()
             output.update({
                 'status': self._get_current_status(stats),
                 'details': self._get_detailed_output(stats),
-                'data': {
-                    'name': self.PROGRAM_NAME,
-                    'in use': stats['in use'],
-                    'free': stats['free'],
-                    'total': stats['total'],
-                },
+                'data': stats,
             })
+
+            output['data'].update({'name': self.PROGRAM_NAME})
         except DiskUsageError, e:
             output.update({'details': str(e)})
         except KeyError:
