@@ -41,7 +41,7 @@ class RamUsage(object):
             'kib': 1024,
             'mib': 1024 ** 2,
             'gib': 1024 ** 3,
-            'per': 1,
+            # 'per': 1,
         }
 
         self._cli_options = self._build_argument_parser().parse_args()
@@ -50,7 +50,7 @@ class RamUsage(object):
         parser = ArgumentParser(prog=self.PROGRAM_NAME)
         parser.add_argument(
             '-u', '--units', dest='units', action='store', default='mib',
-            help='Valid units are : kib, mib, gib or per. Default is mib.'
+            help='Valid units are : kib, mib or gib. Default is mib.'
         )
         parser.add_argument(
             '-O', '--ok', dest='ok_threshold', action='store', required=True,
@@ -60,7 +60,6 @@ class RamUsage(object):
             '-W', '--warning', dest='warning_threshold', action='store', required=True,
             help='Warning status range. E.g : (1500,1700]. Don\'t include brackets !'
         )
-        parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
         return parser
 
@@ -68,9 +67,8 @@ class RamUsage(object):
     def _get_thresholds(self):
         try:
             units = self.units[self._cli_options.units]
-            min_ok, max_ok, min_warning, max_warning = [
-                float(t) * units for t in self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
-            ]
+            thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
+            min_ok, max_ok, min_warning, max_warning = [float(t) * units for t in thresholds]
         except ValueError:
             raise RamUsageError('')
         except KeyError:
@@ -110,11 +108,11 @@ class RamUsage(object):
 
     def get(self):
         stats = self._get_mem_usage()
-        output.update({
+        output = {
             'status': self._get_current_status(stats),
             'details': self._get_detailed_output(stats),
             'data': stats,
-        })
+        }
 
         output['data'].update({'name': self.PROGRAM_NAME})
 
