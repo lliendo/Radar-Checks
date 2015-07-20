@@ -57,11 +57,11 @@ class DiskUsage(object):
         )
         parser.add_argument(
             '-O', '--ok', dest='ok_threshold', action='store', required=True,
-            help='Ok status range. E.g : (0,1500]. Don\'t include brackets !'
+            help='Ok threshold. E.g : (0,1500]. Don\'t include brackets !'
         )
         parser.add_argument(
             '-W', '--warning', dest='warning_threshold', action='store', required=True,
-            help='Warning status range. E.g : (1500,1700]. Don\'t include brackets !'
+            help='Warning threshold. E.g : (1500,1700]. Don\'t include brackets !'
         )
 
         return parser
@@ -72,10 +72,10 @@ class DiskUsage(object):
             units = self.units[self._cli_options.units]
             thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
             min_ok, max_ok, min_warning, max_warning = [float(t) * units for t in thresholds]
-        except ValueError:
-            raise DiskUsageError('')
+        except ValueError, e:
+            raise DiskUsageError('Error - One or more given thresholds are invalid. Details : {:}'.format(e))
         except KeyError:
-            raise DiskUsageError('Error - Wrong \'{:}\' units parameter.')
+            raise DiskUsageError('Error - Wrong \'{:}\' units parameter.'.format(self._cli_options.units))
 
         return {
             'min ok': min_ok,
