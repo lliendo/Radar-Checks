@@ -106,7 +106,7 @@ class RamUsage(object):
             'total': stats.total,
         }
 
-    def get(self):
+    def check(self):
         stats = self._get_ram_usage()
         output = {
             'status': self._get_current_status(stats),
@@ -120,4 +120,4 @@ class RamUsage(object):
 
 
 if __name__ == '__main__':
-    print RamUsage().get()
+    print RamUsage().check()

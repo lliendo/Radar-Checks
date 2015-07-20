@@ -59,7 +59,7 @@ class Uptime(object):
     def _get_uptime(self):
         return int(time.time() - boot_time())
 
-    def get(self):
+    def check(self):
         uptime = self._get_uptime()
         output = {
             'status': self._get_current_status(uptime),
@@ -71,4 +71,4 @@ class Uptime(object):
 
 
 if __name__ == '__main__':
-    print Uptime().get()
+    print Uptime().check()
