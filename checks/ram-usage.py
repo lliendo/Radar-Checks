@@ -24,7 +24,7 @@ Copyright 2015 Lucas Liendo.
 
 from json import dumps as serialize_json
 from argparse import ArgumentParser
-from psutil import phymem_usage as mem_usage
+from psutil import virtual_memory
 
 
 class RamUsageError(Exception):
@@ -93,16 +93,16 @@ class RamUsage(object):
         return status
 
     def _get_detailed_output(self, stats):
-        return 'Total : {:.2f}, in use : {:.2f}, free : {:.2f}.'.format(
-            *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
+        return 'Total : {:.2f}, in use : {:.2f}, available : {:.2f}.'.format(
+            *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'available']]
         )
 
     def _get_mem_usage(self):
-        stats = mem_usage()
+        stats = virtual_memory()
 
         return {
             'in use': stats.used,
-            'free': stats.free,
+            'available': stats.available,
             'total': stats.total,
         }
 
