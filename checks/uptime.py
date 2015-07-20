@@ -22,10 +22,11 @@ Copyright 2015 Lucas Liendo.
 """
 
 
-from platform import system as platform_name
 from json import dumps as serialize_json
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
+from psutil import time
+from psutil import boot_time
 
 
 class UptimeError(Exception):
@@ -35,14 +36,8 @@ class UptimeError(Exception):
 class Uptime(object):
 
     PROGRAM_NAME = 'uptime'
-    PROGRAM_VERSION = '0.0.1'
 
     def __init__(self):
-        self.available_platforms = {
-            'Linux': self._linux_uptime,
-            'Windows': self._windows_uptime,
-        }
-
         self._cli_options = self._build_argument_parser().parse_args()
 
     def _build_argument_parser(self):
@@ -51,26 +46,8 @@ class Uptime(object):
             '-S', '--severe', dest='seconds', action='store', required=True,
             help='Number of seconds for which uptime is severe. E.g. : 300. If uptime is below 300 seconds a severe status is returned.'
         )
-        parser.add_argument('-v', '--version', action='version', version=self.PROGRAM_VERSION)
 
         return parser
-
-    def _linux_uptime(self):
-        try:
-            with open('/proc/uptime') as fd:
-                uptime, _ = fd.readline().split()
-        except IOError, e:
-            raise UptimeError('Error - Couldn\'t open \'/proc/uptime\'. Details : {:}'.format(e))
-
-        return float(uptime)
-
-    def _windows_uptime(self):
-        try:
-            from win32api import GetTickCount
-        except ImportError:
-            raise UptimeError('Error - Couldn\'t import win32api.')
-
-        return GetTickCount() / 1000.0
 
     def _get_current_status(self, seconds):
         return 'SEVERE' if (0 < seconds <= int(self._cli_options.seconds)) else 'OK'
@@ -79,26 +56,16 @@ class Uptime(object):
         d = datetime(1, 1, 1) + timedelta(seconds=seconds)
         return '{:} days {:} hours {:} minutes.'.format(d.day - 1, d.hour, d.minute, d.second)
 
-    def get(self):
-        output = {'status': 'ERROR'}
-        platform = platform_name()
+    def _get_uptime(self):
+        return int(time.time() - boot_time())
 
-        try:
-            seconds = int(self.available_platforms[platform]())
-            output.update({
-                'status': self._get_current_status(seconds),
-                'details': self._get_detailed_output(seconds),
-                'data': {
-                    'name': self.PROGRAM_NAME,
-                    'uptime': seconds,
-                },
-            })
-        except UptimeError, e:
-            output.update({'details': str(e)})
-        except ValueError:
-            output.update({'details': 'Error - uptime\'s \'-s\' argument must be a valid interger value.'})
-        except KeyError:
-            output.update({'details': '{:} platform is not supported.'.format(platform)})
+    def get(self):
+        uptime = self._get_uptime()
+        output = {
+            'status': self._get_current_status(uptime),
+            'details': self._get_detailed_output(uptime),
+            'data': {'uptime': uptime, 'name': self.PROGRAM_NAME},
+        }
 
         return serialize_json(output)
 
