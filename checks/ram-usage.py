@@ -97,7 +97,7 @@ class RamUsage(object):
             *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'available']]
         )
 
-    def _get_mem_usage(self):
+    def _get_ram_usage(self):
         stats = virtual_memory()
 
         return {
@@ -107,7 +107,7 @@ class RamUsage(object):
         }
 
     def get(self):
-        stats = self._get_mem_usage()
+        stats = self._get_ram_usage()
         output = {
             'status': self._get_current_status(stats),
             'details': self._get_detailed_output(stats),
