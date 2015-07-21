@@ -110,14 +110,19 @@ class DiskUsage(object):
         }
 
     def check(self):
-        stats = self._get_disk_usage()
-        output = {
-            'status': self._get_current_status(stats),
-            'details': self._get_detailed_output(stats),
-            'data': stats,
-        }
+        output = {'status': 'ERROR'}
 
-        output['data'].update({'name': self.PROGRAM_NAME})
+        try:
+            stats = self._get_disk_usage()
+            output.update({
+                'status': self._get_current_status(stats),
+                'details': self._get_detailed_output(stats),
+                'data': stats,
+            })
+
+            output['data'].update({'name': self.PROGRAM_NAME})
+        except Exception, e:
+            output.update({'details': str(e)})
 
         return serialize_json(output)
 
