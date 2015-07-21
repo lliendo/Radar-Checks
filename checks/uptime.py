@@ -49,10 +49,10 @@ class Uptime(object):
 
         return parser
 
-    def _get_current_status(self, seconds):
+    def _get_status(self, seconds):
         return 'SEVERE' if (0 < seconds <= int(self._cli_options.seconds)) else 'OK'
 
-    def _get_detailed_output(self, seconds):
+    def _get_details(self, seconds):
         d = datetime(1, 1, 1) + timedelta(seconds=seconds)
         return '{:} days {:} hours {:} minutes.'.format(d.day - 1, d.hour, d.minute, d.second)
 
@@ -62,8 +62,8 @@ class Uptime(object):
     def check(self):
         uptime = self._get_uptime()
         output = {
-            'status': self._get_current_status(uptime),
-            'details': self._get_detailed_output(uptime),
+            'status': self._get_status(uptime),
+            'details': self._get_details(uptime),
             'data': {'uptime': uptime, 'name': self.PROGRAM_NAME},
         }
 

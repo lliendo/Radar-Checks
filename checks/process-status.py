@@ -57,8 +57,8 @@ class ProcessStatus(object):
 
     def _get_thresholds(self):
         try:
-            min_ok, max_ok, min_warning, max_warning = self._cli_options.ok_threshold.split(',') + \
-                self._cli_options.warning_threshold.split(',')
+            thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
+            min_ok, max_ok, min_warning, max_warning = [int(t) for t in thresholds]
         except ValueError, e:
             raise ProcessStatusError('Error - One or more given thresholds are invalid. Details : {:}'.format(e))
 
@@ -69,7 +69,7 @@ class ProcessStatus(object):
             'max warning': max_warning,
         }
 
-    def _get_current_status(self, processes):
+    def _get_status(self, processes):
         status = 'SEVERE'
         thresholds = self._get_thresholds()
         process_count = len(processes)
@@ -81,7 +81,7 @@ class ProcessStatus(object):
 
         return status
 
-    def _get_detailed_output(self, processes):
+    def _get_details(self, processes):
         return '{:} \'{:}\' processes found.'.format(len(processes), self._cli_options.process_name)
 
     def _get_processes(self):
@@ -93,8 +93,8 @@ class ProcessStatus(object):
         try:
             processes = self._get_processes()
             output.update({
-                'status': self._get_current_status(processes),
-                'details': self._get_detailed_output(processes),
+                'status': self._get_status(processes),
+                'details': self._get_details(processes),
                 'data': {
                     'process': self._cli_options.process_name,
                     'count': len(processes),

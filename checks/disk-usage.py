@@ -84,7 +84,7 @@ class DiskUsage(object):
             'max warning': max_warning,
         }
 
-    def _get_current_status(self, stats):
+    def _get_status(self, stats):
         status = 'SEVERE'
         thresholds = self._get_thresholds()
 
@@ -95,7 +95,7 @@ class DiskUsage(object):
 
         return status
 
-    def _get_detailed_output(self, stats):
+    def _get_details(self, stats):
         return 'Total : {:.2f}, in use : {:.2f}, free : {:.2f}.'.format(
             *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
         )
@@ -115,8 +115,8 @@ class DiskUsage(object):
         try:
             stats = self._get_disk_usage()
             output.update({
-                'status': self._get_current_status(stats),
-                'details': self._get_detailed_output(stats),
+                'status': self._get_status(stats),
+                'details': self._get_details(stats),
                 'data': stats,
             })
 
