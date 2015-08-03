@@ -3,20 +3,20 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of Radar-Checks.
+This file is part of Radar.
 
-Radar-Checks is free software: you can redistribute it and/or modify
+Radar is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Radar-Checks is distributed in the hope that it will be useful,
+Radar is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Lesser GNU General Public License for more details.
 
 You should have received a copy of the Lesser GNU General Public License
-along with Radar-Checks. If not, see <http://www.gnu.org/licenses/>.
+along with Radar. If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2015 Lucas Liendo.
 """
