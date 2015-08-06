@@ -96,7 +96,7 @@ class DiskUsage(object):
         return status
 
     def _get_details(self, stats):
-        return 'Total : {:.2f}, in use : {:.2f}, free : {:.2f}.'.format(
+        return 'Total : {:.2f}, in use : {:.2f}, free : {:.2f}'.format(
             *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
         )
 
@@ -107,6 +107,7 @@ class DiskUsage(object):
             'in use': stats.used,
             'free': stats.free,
             'total': stats.total,
+            'partition': self._cli_options.partition,
         }
 
     def check(self):
@@ -119,7 +120,6 @@ class DiskUsage(object):
                 'details': self._get_details(stats),
                 'data': stats,
             })
-
             output['data'].update({'name': self.PROGRAM_NAME})
         except Exception, e:
             output.update({'details': str(e)})
