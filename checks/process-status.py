@@ -82,7 +82,7 @@ class ProcessStatus(object):
         return status
 
     def _get_details(self, processes):
-        return '{:} \'{:}\' processes found.'.format(len(processes), self._cli_options.process_name)
+        return '{:} \'{:}\' processes found'.format(len(processes), self._cli_options.process_name)
 
     def _get_processes(self):
         return [p for p in process_iter() if self._cli_options.process_name in p.name()]

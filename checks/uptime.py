@@ -54,7 +54,7 @@ class Uptime(object):
 
     def _get_details(self, seconds):
         d = datetime(1, 1, 1) + timedelta(seconds=seconds)
-        return '{:} days {:} hours {:} minutes.'.format(d.day - 1, d.hour, d.minute, d.second)
+        return '{:} days {:} hours {:} minutes'.format(d.day - 1, d.hour, d.minute, d.second)
 
     def _get_uptime(self):
         return int(time.time() - boot_time())
