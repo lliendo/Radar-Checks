@@ -2,14 +2,14 @@
 Radar checks
 ============
 
-This repository holds some basic and useful scripts to monitor :
+This repository contains some basic and useful scripts to monitor :
 
     * Uptime.
     * Ram usage.
     * Disk usage.
-    * Service alive.
+    * Process status.
 
-All scripts are written in `Python <https://www.python.org/>` programming language.
+All scripts are written in the `Python <https://www.python.org/>` programming language.
 They use the excellent `psutil <https://github.com/giampaolo/psutil>` module for maximum portability.
 
 
@@ -72,10 +72,10 @@ If you find this software useful you can drop me a line. Bug reporting,
 suggestions, missing documentation and critics of any kind are always welcome !
 
 
-Special thanks
---------------
+Acknowledgements
+----------------
 
-To Giampaolo Rodola for its psutil module.
+To Giampaolo Rodola for its `psutil <https://github.com/giampaolo/psutil>` module.
 
 
 Authors
