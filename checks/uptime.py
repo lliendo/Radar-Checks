@@ -60,12 +60,20 @@ class Uptime(object):
         return int(time.time() - boot_time())
 
     def check(self):
-        uptime = self._get_uptime()
-        output = {
-            'status': self._get_status(uptime),
-            'details': self._get_details(uptime),
-            'data': {'uptime': uptime, 'name': self.PROGRAM_NAME},
-        }
+        output = {'status': 'ERROR'}
+
+        try:
+            uptime = self._get_uptime()
+            output.update({
+                'status': self._get_status(uptime),
+                'details': self._get_details(uptime),
+                'data': {
+                    'uptime': uptime,
+                    'name': self.PROGRAM_NAME
+                },
+            })
+        except Exception, e:
+            output['details'] = str(e)
 
         return serialize_json(output)
 

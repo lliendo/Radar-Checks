@@ -108,6 +108,7 @@ class DiskUsage(object):
             'free': stats.free,
             'total': stats.total,
             'partition': self._cli_options.partition,
+            'name': self.PROGRAM_NAME,
         }
 
     def check(self):
@@ -120,9 +121,8 @@ class DiskUsage(object):
                 'details': self._get_details(stats),
                 'data': stats,
             })
-            output['data'].update({'name': self.PROGRAM_NAME})
         except Exception, e:
-            output.update({'details': str(e)})
+            output['details'] = str(e)
 
         return serialize_json(output)
 

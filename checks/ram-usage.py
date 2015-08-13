@@ -104,6 +104,7 @@ class RamUsage(object):
             'in use': stats.used,
             'available': stats.available,
             'total': stats.total,
+            'name': self.PROGRAM_NAME,
         }
 
     def check(self):
@@ -116,10 +117,8 @@ class RamUsage(object):
                 'details': self._get_details(stats),
                 'data': stats,
             })
-
-            output['data'].update({'name': self.PROGRAM_NAME})
         except Exception, e:
-            output.update({'details': str(e)})
+            output['details'] = str(e)
 
         return serialize_json(output)
 

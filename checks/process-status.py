@@ -98,12 +98,11 @@ class ProcessStatus(object):
                 'data': {
                     'process': self._cli_options.process_name,
                     'count': len(processes),
+                    'name': self.PROGRAM_NAME,
                 },
             })
-
-            output['data'].update({'name': self.PROGRAM_NAME})
         except Exception, e:
-            output.update({'details': str(e)})
+            output['details'] = str(e)
 
         return serialize_json(output)
 
