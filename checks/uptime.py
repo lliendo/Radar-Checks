@@ -50,6 +50,9 @@ class Uptime(object):
         return parser
 
     def _get_status(self, seconds):
+        if seconds <= 0:
+            raise UptimeError('Error - Number of seconds must be a positive value.')
+
         return 'SEVERE' if (0 < seconds <= int(self._cli_options.seconds)) else 'OK'
 
     def _get_details(self, seconds):
