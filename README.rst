@@ -46,7 +46,14 @@ Installation
 Tests
 -----
 
-    To run tests, clone the this repository and run Tox.
+    Radar-Checks uses `Tox <http://codespeak.net/tox/>` to run its tests.
+    To install Tox, from the command line run :
+
+        .. code-block:: bash
+            
+            pip install tox
+
+    To run the tests, clone the this repository and run Tox.
 
         .. code-block:: bash
 
