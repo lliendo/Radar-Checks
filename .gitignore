@@ -9,3 +9,4 @@ dist
 *.mo
 clean
 push-master
+push-github-master
