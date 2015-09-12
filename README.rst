@@ -3,10 +3,10 @@ Radar checks
 
 This repository contains some basic but useful checks to monitor :
 
-    * Uptime.
-    * Ram usage.
-    * Disk usage.
-    * Process status.
+* Uptime.
+* Ram usage.
+* Disk usage.
+* Process status.
 
 All scripts are written in the `Python <https://www.python.org/>`_ programming language.
 They use the excellent `psutil <https://github.com/giampaolo/psutil>`_ module for maximum portability.
@@ -33,11 +33,11 @@ Installation
 
 Clone this repository to a temporary directory using GIT, and run  :
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        git clone https://github.com/lliendo/Radar-Checks.git
-        cd Radar-Checks
-        python setup.py install
+    git clone https://github.com/lliendo/Radar-Checks.git
+    cd Radar-Checks
+    python setup.py install
 
 Now manually copy the checks you want to use to your Radar's client checks
 directory.
@@ -49,17 +49,17 @@ Tests
 Radar-Checks uses `Nose <https://nose.readthedocs.org/en/latest/>`_ to run its tests.
 To install Nose, from the command line run :
 
-    .. code-block:: bash
-        
-        pip install nose
+.. code-block:: bash
+    
+    pip install nose
 
 To run the tests, clone the this repository and run Nose.
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        git clone https://github.com/lliendo/Radar-Checks.git
-        cd Radar-Checks
-        nosetests
+    git clone https://github.com/lliendo/Radar-Checks.git
+    cd Radar-Checks
+    nosetests
 
 
 License
