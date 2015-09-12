@@ -41,7 +41,6 @@ class RamUsage(object):
             'kib': 1024,
             'mib': 1024 ** 2,
             'gib': 1024 ** 3,
-            # 'per': 1,
         }
 
         self._cli_options = self._build_argument_parser().parse_args()
