@@ -8,8 +8,8 @@ Radar checks
         * Disk usage.
         * Process status.
 
-    All scripts are written in the `Python <https://www.python.org/>` programming language.
-    They use the excellent `psutil <https://github.com/giampaolo/psutil>` module for maximum portability.
+    All scripts are written in the `Python <https://www.python.org/>`_ programming language.
+    They use the excellent `psutil <https://github.com/giampaolo/psutil>`_ module for maximum portability.
     There's also included a template that you can use as a starting point to code
     a check.
 
@@ -46,32 +46,32 @@ Installation
 Tests
 -----
 
-    Radar-Checks uses `Tox <http://codespeak.net/tox/>` to run its tests.
-    To install Tox, from the command line run :
+    Radar-Checks uses `Nose <https://nose.readthedocs.org/en/latest/>`_ to run its tests.
+    To install Nose, from the command line run :
 
         .. code-block:: bash
             
-            pip install tox
+            pip install nose
 
-    To run the tests, clone the this repository and run Tox.
+    To run the tests, clone the this repository and run Nose.
 
         .. code-block:: bash
 
             git clone https://github.com/lliendo/Radar-Checks.git
             cd Radar-Checks
-            tox
+            nosetests
 
 
 License
 -------
 
-    Radar checks are distributed under the LGPL v3 license.
+    Radar checks are distributed under the `GNU LGPLv3 <https://www.gnu.org/licenses/lgpl.txt>`_ license. 
 
 
 Acknowledgements
 ----------------
 
-    To Giampaolo Rodola for its `psutil <https://github.com/giampaolo/psutil>` module.
+    To Giampaolo Rodola for its psutil module.
 
 
 Authors
