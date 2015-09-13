@@ -31,7 +31,8 @@ supported on your platform you'll be able to run them without issues.
 Installation
 ------------
 
-Clone this repository to a temporary directory using GIT, and run  :
+Clone this repository to a temporary directory using `GIT <https://git-scm.com/>`_ (or alternatively download
+as .zip), and run  :
 
 .. code-block:: bash
 
