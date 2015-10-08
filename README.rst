@@ -32,7 +32,7 @@ Installation
 ------------
 
 Clone this repository to a temporary directory using `GIT <https://git-scm.com/>`_ (or alternatively download
-as .zip), and run  :
+as `.zip <https://github.com/lliendo/Radar-Checks/archive/master.zip>`_), and run  :
 
 .. code-block:: bash
 
