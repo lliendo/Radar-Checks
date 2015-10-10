@@ -72,7 +72,7 @@ Radar checks are distributed under the `GNU LGPLv3 <https://www.gnu.org/licenses
 Acknowledgements
 ----------------
 
-To Giampaolo Rodola for its psutil module.
+To `Giampaolo Rodola <https://github.com/giampaolo>`_  for its psutil module.
 
 
 Authors
