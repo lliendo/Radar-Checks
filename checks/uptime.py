@@ -49,11 +49,16 @@ class Uptime(object):
 
         return parser
 
-    def _get_status(self, seconds):
-        if seconds <= 0:
+    def _get_status(self, uptime_seconds):
+        try:
+            threshold_seconds = int(self._cli_options.seconds)
+        except ValueError:
             raise UptimeError('Error - Number of seconds must be a positive value.')
 
-        return 'SEVERE' if (0 < seconds <= int(self._cli_options.seconds)) else 'OK'
+        if threshold_seconds <= 0:
+            raise UptimeError('Error - Number of seconds must be a positive value.')
+
+        return 'SEVERE' if (0 < uptime_seconds <= threshold_seconds) else 'OK'
 
     def _get_details(self, seconds):
         d = datetime(1, 1, 1) + timedelta(seconds=seconds)
