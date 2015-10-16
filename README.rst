@@ -1,3 +1,13 @@
+.. image:: https://codeclimate.com/github/lliendo/Radar-Checks/badges/gpa.svg
+   :target: https://codeclimate.com/github/lliendo/Radar-Checks
+   :alt: Code Climate
+
+
+.. image:: https://api.travis-ci.org/lliendo/Radar-Checks.svg?branch=master
+    :target: https://travis-ci.org/lliendo/Radar-Checks
+    :alt: Travis CI
+
+
 Radar checks
 ============
 
