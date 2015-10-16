@@ -20,20 +20,26 @@ Copyright 2015 Lucas Liendo.
 """
 
 
-from sys import argv
 from json import loads
-from unittest import TestCase
 from nose.tools import raises
-from mock import MagicMock
+from mock import patch, MagicMock
 from checks.uptime import Uptime, UptimeError
+from . import TestCheck
 
 
-class TestUptime(TestCase):
+class TestUptime(TestCheck):
+    def _get_options(self, severe_uptime):
+        return [
+            ('-S', {'action': 'store', 'dest': 'seconds', 'default': severe_uptime})
+        ]
+
     def _assert_uptime_returns_code(self, code, uptime_seconds):
-        argv.extend(['-S', '300'])
-        uptime = Uptime()
-        uptime._get_uptime = MagicMock(side_effect=[uptime_seconds])
-        self.assertEqual(loads(uptime.check())['status'], code)
+        options = self._get_options('300')
+
+        with patch.object(Uptime, '_build_argument_parser', return_value=self._get_argument_parser(options)):
+            uptime = Uptime()
+            uptime._get_uptime = MagicMock(side_effect=[uptime_seconds])
+            self.assertEqual(loads(uptime.check())['status'], code)
 
     def test_uptime_returns_ok_code(self):
         self._assert_uptime_returns_code('OK', 301)
@@ -47,5 +53,7 @@ class TestUptime(TestCase):
 
     @raises(UptimeError)
     def test_cli_negative_seconds_raises_uptime_error(self):
-        argv.extend(['-S', '-1'])
-        Uptime()._get_status(1000)
+        options = self._get_options('-1')
+
+        with patch.object(Uptime, '_build_argument_parser', return_value=self._get_argument_parser(options)):
+            Uptime()._get_status(1000)
