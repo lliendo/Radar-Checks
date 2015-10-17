@@ -127,4 +127,7 @@ class DiskUsage(object):
 
 
 if __name__ == '__main__':
-    print DiskUsage().check()
+    try:
+        print DiskUsage().check()
+    except Exception, e:
+        print e

@@ -87,4 +87,7 @@ class Uptime(object):
 
 
 if __name__ == '__main__':
-    print Uptime().check()
+    try:
+        print Uptime().check()
+    except Exception, e:
+        print e

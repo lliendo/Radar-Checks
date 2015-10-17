@@ -123,4 +123,7 @@ class RamUsage(object):
 
 
 if __name__ == '__main__':
-    print RamUsage().check()
+    try:
+        print RamUsage().check()
+    except Exception, e:
+        print e

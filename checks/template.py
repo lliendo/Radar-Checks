@@ -50,4 +50,7 @@ class Template(object):
 
 
 if __name__ == '__main__':
-    print Template().check()
+    try:
+        print Template().check()
+    except Exception, e:
+        print e
