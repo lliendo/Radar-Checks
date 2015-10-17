@@ -95,8 +95,8 @@ class DiskUsage(object):
         return status
 
     def _get_details(self, stats):
-        return 'Total : {:.2f}, in use : {:.2f}, free : {:.2f}'.format(
-            *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'free']]
+        return 'Total : {:.2f}, in use : {:.2f}, available : {:.2f}'.format(
+            *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'available']]
         )
 
     def _get_disk_usage(self):
@@ -104,7 +104,7 @@ class DiskUsage(object):
 
         return {
             'in use': stats.used,
-            'free': stats.free,
+            'available': stats.free,
             'total': stats.total,
             'partition': self._cli_options.partition,
             'name': self.PROGRAM_NAME,
