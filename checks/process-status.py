@@ -33,16 +33,29 @@ class ProcessStatusError(Exception):
 
 class ProcessStatus(object):
 
-    PROGRAM_NAME = 'process-status'
+    PROGRAM_NAME = 'process_status'
 
     def __init__(self):
         self._cli_options = self._build_argument_parser().parse_args()
+        self._filters = {
+            'process_name': lambda p: self._cli_options.process_name in p.name(),
+            'process_status': lambda p: self._cli_options.process_status.lower() == p.status(),
+        }
+        self._verify_enabled_filters()
+
+    def _verify_enabled_filters(self):
+        if all([getattr(self._cli_options, k) is None for k in self._filters.keys()]):
+            raise ProcessStatusError('Error - At least one of the available options (-n | -s) must be supplied.')
 
     def _build_argument_parser(self):
         parser = ArgumentParser(prog=self.PROGRAM_NAME)
         parser.add_argument(
-            '-n', '--name', dest='process_name', action='store', required=True,
-            help='The name of the process to look for.'
+            '-n', '--name', dest='process_name', action='store', required=False,
+            default=None, help='The name of the process to look for.'
+        )
+        parser.add_argument(
+            '-s', '--status', dest='process_status', action='store', required=False,
+            default=None, help='The status of the process.'
         )
         parser.add_argument(
             '-O', '--ok', dest='ok_threshold', action='store', required=True,
@@ -84,14 +97,18 @@ class ProcessStatus(object):
     def _get_details(self, processes):
         return '{:} \'{:}\' processes found'.format(len(processes), self._cli_options.process_name)
 
-    def _get_processes(self):
-        return [p for p in process_iter() if self._cli_options.process_name in p.name()]
+    def _filters_apply(self, process):
+        enabled_filters = [f for k, f in self._filters.iteritems() if getattr(self._cli_options, k) is not None]
+        return all([f(process) for f in enabled_filters])
+
+    def _get_filtered_processes(self):
+        return [p for p in process_iter() if self._filters_apply(p)]
 
     def check(self):
         output = {'status': 'ERROR'}
 
         try:
-            processes = self._get_processes()
+            processes = self._get_filtered_processes()
             output.update({
                 'status': self._get_status(processes),
                 'details': self._get_details(processes),
@@ -108,4 +125,7 @@ class ProcessStatus(object):
 
 
 if __name__ == '__main__':
-    print ProcessStatus().check()
+    try:
+        print ProcessStatus().check()
+    except Exception, e:
+        print e
