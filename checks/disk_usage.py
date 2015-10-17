@@ -33,7 +33,7 @@ class DiskUsageError(Exception):
 
 class DiskUsage(object):
 
-    PROGRAM_NAME = 'disk-usage'
+    PROGRAM_NAME = 'disk_usage'
 
     def __init__(self):
         self.units = {

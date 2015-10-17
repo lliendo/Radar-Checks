@@ -33,7 +33,7 @@ class RamUsageError(Exception):
 
 class RamUsage(object):
 
-    PROGRAM_NAME = 'ram-usage'
+    PROGRAM_NAME = 'ram_usage'
 
     def __init__(self):
         self.units = {
