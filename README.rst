@@ -64,7 +64,7 @@ To install Nose, from the command line run :
     
     pip install nose
 
-To run the tests, clone the this repository and run Nose.
+To run the tests, clone this repository and run Nose :
 
 .. code-block:: bash
 
@@ -82,7 +82,7 @@ Radar checks are distributed under the `GNU LGPLv3 <https://www.gnu.org/licenses
 Acknowledgements
 ----------------
 
-To `Giampaolo Rodola <https://github.com/giampaolo>`_  for its psutil module.
+* To `Giampaolo Rodola <https://github.com/giampaolo>`_  for its psutil module.
 
 
 Authors
