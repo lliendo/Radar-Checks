@@ -36,10 +36,17 @@ class TestDiskUsage(TestCheck):
             ('-W', {'action': 'store', 'dest': 'warning_threshold', 'default': warning_threshold})
         ]
 
+    def _get_usage(self, in_use, available):
+        return {
+            'in use': in_use * (1024 ** 3),
+            'available': available * (1024 ** 3),
+            'total': (in_use + available) * (1024 ** 3),
+        }
+
     def _test_invalid_args_raises_error(self, options):
         with patch.object(DiskUsage, '_build_argument_parser', return_value=self._get_argument_parser(options)):
-            ram_usage = DiskUsage()
-            ram_usage._get_thresholds()
+            disk_usage = DiskUsage()
+            disk_usage._get_thresholds()
 
     @raises(DiskUsageError)
     def test_invalid_units_raises_error(self):
@@ -55,22 +62,27 @@ class TestDiskUsage(TestCheck):
 
     def _assert_disk_usage_returns_code(self, code, in_use, available):
         options = self._get_options('/', 'gib', '0,500', '500,1000')
-        usage = {
-            'in use': in_use * (1024 ** 3),
-            'available': available * (1024 ** 3),
-            'total': (in_use + available) * (1024 ** 3),
-        }
+        usage = self._get_usage(in_use, available)
 
         with patch.object(DiskUsage, '_build_argument_parser', return_value=self._get_argument_parser(options)):
             disk_usage = DiskUsage()
             disk_usage._get_disk_usage = MagicMock(side_effect=[usage])
             self.assertEqual(loads(disk_usage.check())['status'], code)
 
-    def test_ram_usage_returns_ok_code(self):
+    def test_disk_usage_returns_ok_code(self):
         self._assert_disk_usage_returns_code('OK', 250, 1250)
 
-    def test_ram_usage_returns_warning_code(self):
+    def test_disk_usage_returns_warning_code(self):
         self._assert_disk_usage_returns_code('WARNING', 750, 750)
 
-    def test_ram_usage_returns_svere_code(self):
+    def test_disk_usage_returns_severe_code(self):
         self._assert_disk_usage_returns_code('SEVERE', 1250, 250)
+
+    def test_disk_usage_returns_error_code(self):
+        options = self._get_options('', '', '', '')
+        usage = self._get_usage(750, 750)
+
+        with patch.object(DiskUsage, '_build_argument_parser', return_value=self._get_argument_parser(options)):
+            disk_usage = DiskUsage()
+            disk_usage._get_disk_usage = MagicMock(side_effect=[usage])
+            self.assertEqual(loads(disk_usage.check())['status'], 'ERROR')
