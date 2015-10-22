@@ -28,7 +28,7 @@ from . import TestCheck
 
 
 class TestDiskUsage(TestCheck):
-    def _get_options(self, partition, units, ok_threshold, warning_threshold):
+    def _get_options(self, partition='', units='', ok_threshold='', warning_threshold=''):
         return [
             ('-p', {'action': 'store', 'dest': 'partition', 'default': partition}),
             ('-u', {'action': 'store', 'dest': 'units', 'default': units}),
@@ -50,15 +50,15 @@ class TestDiskUsage(TestCheck):
 
     @raises(DiskUsageError)
     def test_invalid_units_raises_error(self):
-        self._test_invalid_args_raises_error(self._get_options('/', 'wrong_units', '', ''))
+        self._test_invalid_args_raises_error(self._get_options(partition='/', units='wrong_units'))
 
     @raises(DiskUsageError)
     def test_invalid_ok_threshold_raises_error(self):
-        self._test_invalid_args_raises_error(self._get_options('/', 'mib', '1', ''))
+        self._test_invalid_args_raises_error(self._get_options(partition='/', units='mib'))
 
     @raises(DiskUsageError)
     def test_invalid_warning_threshold_raises_error(self):
-        self._test_invalid_args_raises_error(self._get_options('/', 'mib', '0,500', '1'))
+        self._test_invalid_args_raises_error(self._get_options(partition='/', units='mib', ok_threshold='0,500'))
 
     def _assert_disk_usage_returns_code(self, code, in_use, available):
         options = self._get_options('/', 'gib', '0,500', '500,1000')
@@ -79,7 +79,7 @@ class TestDiskUsage(TestCheck):
         self._assert_disk_usage_returns_code('SEVERE', 1250, 250)
 
     def test_disk_usage_returns_error_code(self):
-        options = self._get_options('', '', '', '')
+        options = self._get_options()
         usage = self._get_usage(750, 750)
 
         with patch.object(DiskUsage, '_build_argument_parser', return_value=self._get_argument_parser(options)):
