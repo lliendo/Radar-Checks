@@ -28,7 +28,7 @@ from . import TestCheck
 
 
 class TestUptime(TestCheck):
-    def _get_options(self, severe_uptime):
+    def _get_options(self, severe_uptime=''):
         return [
             ('-S', {'action': 'store', 'dest': 'seconds', 'default': severe_uptime})
         ]
@@ -41,12 +41,6 @@ class TestUptime(TestCheck):
             uptime._get_uptime = MagicMock(side_effect=[uptime_seconds])
             self.assertEqual(loads(uptime.check())['status'], code)
 
-    def test_uptime_returns_ok_code(self):
-        self._assert_uptime_returns_code('OK', 301)
-
-    def test_uptime_returns_severe_code(self):
-        self._assert_uptime_returns_code('SEVERE', 60)
-
     @raises(Exception)
     def test_no_args_supplied_raises_error():
         Uptime()
@@ -57,3 +51,15 @@ class TestUptime(TestCheck):
 
         with patch.object(Uptime, '_build_argument_parser', return_value=self._get_argument_parser(options)):
             Uptime()._get_status(1000)
+
+    def test_uptime_returns_ok_code(self):
+        self._assert_uptime_returns_code('OK', 301)
+
+    def test_uptime_returns_severe_code(self):
+        self._assert_uptime_returns_code('SEVERE', 60)
+
+    def test_uptime_returns_error_code(self):
+        options = self._get_options()
+
+        with patch.object(Uptime, '_build_argument_parser', return_value=self._get_argument_parser(options)):
+            self.assertEqual(loads(Uptime().check())['status'], 'ERROR')
