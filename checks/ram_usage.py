@@ -68,7 +68,7 @@ class RamUsage(object):
             units = self.units[self._cli_options.units]
             thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
             min_ok, max_ok, min_warning, max_warning = [float(t) * units for t in thresholds]
-        except ValueError, e:
+        except ValueError as e:
             raise RamUsageError('Error - One or more given thresholds are invalid. Details : {:}'.format(e))
         except KeyError:
             raise RamUsageError('Error - Wrong \'{:}\' units parameter.'.format(self._cli_options.units))
@@ -116,7 +116,7 @@ class RamUsage(object):
                 'details': self._get_details(stats),
                 'data': stats,
             })
-        except Exception, e:
+        except Exception as e:
             output['details'] = str(e)
 
         return serialize_json(output)
@@ -125,5 +125,5 @@ class RamUsage(object):
 if __name__ == '__main__':
     try:
         print RamUsage().check()
-    except Exception, e:
+    except Exception as e:
         print e

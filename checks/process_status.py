@@ -72,7 +72,7 @@ class ProcessStatus(object):
         try:
             thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
             min_ok, max_ok, min_warning, max_warning = [int(t) for t in thresholds]
-        except ValueError, e:
+        except ValueError as e:
             raise ProcessStatusError('Error - One or more given thresholds are invalid. Details : {:}'.format(e))
 
         return {
@@ -118,7 +118,7 @@ class ProcessStatus(object):
                     'name': self.PROGRAM_NAME,
                 },
             })
-        except Exception, e:
+        except Exception as e:
             output['details'] = str(e)
 
         return serialize_json(output)
@@ -127,5 +127,5 @@ class ProcessStatus(object):
 if __name__ == '__main__':
     try:
         print ProcessStatus().check()
-    except Exception, e:
+    except Exception as e:
         print e

@@ -80,7 +80,7 @@ class Uptime(object):
                     'name': self.PROGRAM_NAME
                 },
             })
-        except Exception, e:
+        except Exception as e:
             output['details'] = str(e)
 
         return serialize_json(output)
@@ -89,5 +89,5 @@ class Uptime(object):
 if __name__ == '__main__':
     try:
         print Uptime().check()
-    except Exception, e:
+    except Exception as e:
         print e

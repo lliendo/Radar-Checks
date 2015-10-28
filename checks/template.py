@@ -43,7 +43,7 @@ class Template(object):
                 'details': '',
                 'data': {},
             })
-        except Exception, e:
+        except Exception as e:
             output['details'] = str(e)
 
         return serialize_json(output)
@@ -52,5 +52,5 @@ class Template(object):
 if __name__ == '__main__':
     try:
         print Template().check()
-    except Exception, e:
+    except Exception as e:
         print e
