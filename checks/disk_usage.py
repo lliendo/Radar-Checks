@@ -41,6 +41,7 @@ class DiskUsage(object):
             'kib': 1024,
             'mib': 1024 ** 2,
             'gib': 1024 ** 3,
+            'pc': 1,
         }
         self._cli_options = self._build_argument_parser().parse_args()
 
@@ -48,7 +49,7 @@ class DiskUsage(object):
         parser = ArgumentParser(prog=self.PROGRAM_NAME)
         parser.add_argument(
             '-u', '--units', dest='units', action='store', default='mib',
-            help='Valid units are : kib, mib or gib. Default is mib.'
+            help='Valid units are : kib, mib, gib or pc. Default is mib.'
         )
         parser.add_argument(
             '-p', '--partition', dest='partition', action='store', required=True,
@@ -65,14 +66,13 @@ class DiskUsage(object):
 
         return parser
 
-    # TODO: Implement percentage units !
     def _get_thresholds(self):
         try:
             units = self.units[self._cli_options.units]
             thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
             min_ok, max_ok, min_warning, max_warning = [float(t) * units for t in thresholds]
-        except ValueError as e:
-            raise DiskUsageError('Error - One or more given thresholds are invalid. Details : {:}'.format(e))
+        except ValueError as error:
+            raise DiskUsageError('Error - One or more given thresholds are invalid. Details : {:}'.format(error))
         except KeyError:
             raise DiskUsageError('Error - Wrong \'{:}\' units parameter.'.format(self._cli_options.units))
 
@@ -99,16 +99,26 @@ class DiskUsage(object):
             *[stats[k] / float(self.units[self._cli_options.units]) for k in ['total', 'in use', 'available']]
         )
 
+    def _get_percentage(self, consumed, total):
+        return round((consumed / float(total)) * 100, 2)
+
     def _get_disk_usage(self):
         stats = disk_usage(self._cli_options.partition)
-
-        return {
-            'in use': stats.used,
-            'available': stats.free,
-            'total': stats.total,
+        du = {
             'partition': self._cli_options.partition,
             'name': self.PROGRAM_NAME,
         }
+
+        if self._cli_options.units == 'pc':
+            du['in use'] = self._get_percentage(stats.used, stats.total)
+            du['available'] = self._get_percentage(stats.free, stats.total)
+            du['total'] = 100  # Yes this is stupid, but keeps consistency.
+        else:
+            du['in use'] = stats.used
+            du['available'] = stats.free
+            du['total'] = stats.total
+
+        return du
 
     def check(self):
         output = {'status': 'ERROR'}
@@ -120,8 +130,8 @@ class DiskUsage(object):
                 'details': self._get_details(stats),
                 'data': stats,
             })
-        except Exception as e:
-            output['details'] = str(e)
+        except Exception as error:
+            output['details'] = str(error)
 
         return serialize_json(output)
 
@@ -129,5 +139,5 @@ class DiskUsage(object):
 if __name__ == '__main__':
     try:
         print DiskUsage().check()
-    except Exception as e:
-        print e
+    except Exception as error:
+        print error

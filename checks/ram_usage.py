@@ -41,6 +41,7 @@ class RamUsage(object):
             'kib': 1024,
             'mib': 1024 ** 2,
             'gib': 1024 ** 3,
+            'pc': 1,
         }
 
         self._cli_options = self._build_argument_parser().parse_args()
@@ -49,7 +50,7 @@ class RamUsage(object):
         parser = ArgumentParser(prog=self.PROGRAM_NAME)
         parser.add_argument(
             '-u', '--units', dest='units', action='store', default='mib',
-            help='Valid units are : kib, mib or gib. Default is mib.'
+            help='Valid units are : kib, mib, gib or pc. Default is mib.'
         )
         parser.add_argument(
             '-O', '--ok', dest='ok_threshold', action='store', required=True,
@@ -62,14 +63,13 @@ class RamUsage(object):
 
         return parser
 
-    # TODO: Implement percentage units !
     def _get_thresholds(self):
         try:
             units = self.units[self._cli_options.units]
             thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
             min_ok, max_ok, min_warning, max_warning = [float(t) * units for t in thresholds]
-        except ValueError as e:
-            raise RamUsageError('Error - One or more given thresholds are invalid. Details : {:}'.format(e))
+        except ValueError as error:
+            raise RamUsageError('Error - One or more given thresholds are invalid. Details : {:}'.format(error))
         except KeyError:
             raise RamUsageError('Error - Wrong \'{:}\' units parameter.'.format(self._cli_options.units))
 
@@ -98,13 +98,18 @@ class RamUsage(object):
 
     def _get_ram_usage(self):
         stats = virtual_memory()
+        vm = {'name': self.PROGRAM_NAME}
 
-        return {
-            'in use': stats.used,
-            'available': stats.available,
-            'total': stats.total,
-            'name': self.PROGRAM_NAME,
-        }
+        if self._cli_options.units == 'pc':
+            vm['in use'] = self._get_percentage(stats.used, stats.total)
+            vm['available'] = self._get_percentage(stats.free, stats.total)
+            vm['total'] = 100  # Yes this is stupid, but keeps consistency.
+        else:
+            vm['in use'] = stats.used
+            vm['available'] = stats.available
+            vm['total'] = stats.total
+
+        return vm
 
     def check(self):
         output = {'status': 'ERROR'}
@@ -116,8 +121,8 @@ class RamUsage(object):
                 'details': self._get_details(stats),
                 'data': stats,
             })
-        except Exception as e:
-            output['details'] = str(e)
+        except Exception as error:
+            output['details'] = str(error)
 
         return serialize_json(output)
 
@@ -125,5 +130,5 @@ class RamUsage(object):
 if __name__ == '__main__':
     try:
         print RamUsage().check()
-    except Exception as e:
-        print e
+    except Exception as error:
+        print error
