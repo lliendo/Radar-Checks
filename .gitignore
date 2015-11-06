@@ -8,5 +8,5 @@ dist
 *.ropeproject
 *.mo
 clean
-push-master
-push-github-master
+push-progress
+push-github
