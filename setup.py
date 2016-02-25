@@ -36,7 +36,8 @@ setup(
     url='https://github.com/lliendo/Radar-Checks',
     install_requires=[
         'nose==1.3.7',
-        'psutil==3.1.1',
+        'mock==1.3.0',
+        'psutil==3.3.0',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
