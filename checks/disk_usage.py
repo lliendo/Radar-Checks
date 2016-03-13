@@ -41,7 +41,7 @@ class DiskUsage(object):
             'kib': 1024,
             'mib': 1024 ** 2,
             'gib': 1024 ** 3,
-            'pc': 1,
+            'pc': 1,  # pc stands for 'percentage' units.
         }
         self._cli_options = self._build_argument_parser().parse_args()
 
