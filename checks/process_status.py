@@ -38,13 +38,13 @@ class ProcessStatus(object):
     def __init__(self):
         self._cli_options = self._build_argument_parser().parse_args()
         self._filters = {
-            'process_name': lambda p: self._cli_options.process_name in p.name(),
-            'process_status': lambda p: self._cli_options.process_status.lower() == p.status(),
+            'process_name': lambda process: self._cli_options.process_name in process.name(),
+            'process_status': lambda process: self._cli_options.process_status.lower() == process.status(),
         }
         self._verify_enabled_filters()
 
     def _verify_enabled_filters(self):
-        if all([getattr(self._cli_options, k) is None for k in self._filters.keys()]):
+        if all([getattr(self._cli_options, key) is None for key in self._filters.keys()]):
             raise ProcessStatusError('Error - At least one of the available options (-n | -s) must be supplied.')
 
     def _build_argument_parser(self):
@@ -71,7 +71,7 @@ class ProcessStatus(object):
     def _get_thresholds(self):
         try:
             thresholds = self._cli_options.ok_threshold.split(',') + self._cli_options.warning_threshold.split(',')
-            min_ok, max_ok, min_warning, max_warning = [int(t) for t in thresholds]
+            min_ok, max_ok, min_warning, max_warning = [int(threshold) for threshold in thresholds]
         except ValueError as error:
             raise ProcessStatusError('Error - One or more given thresholds are invalid. Details : {:}.'.format(error))
 
@@ -98,11 +98,11 @@ class ProcessStatus(object):
         return '{:} \'{:}\' processes found'.format(len(processes), self._cli_options.process_name)
 
     def _filters_apply(self, process):
-        enabled_filters = [f for k, f in self._filters.iteritems() if getattr(self._cli_options, k) is not None]
-        return all([f(process) for f in enabled_filters])
+        enabled_filters = [filter for key, filter in self._filters.iteritems() if getattr(self._cli_options, key) is not None]
+        return all([filter(process) for filter in enabled_filters])
 
     def _get_filtered_processes(self):
-        return [p for p in process_iter() if self._filters_apply(p)]
+        return [process for process in process_iter() if self._filters_apply(process)]
 
     def check(self):
         output = {'status': 'ERROR'}
